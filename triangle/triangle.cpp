@@ -5,13 +5,14 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
-static const int MAX_LOADSTRING = 100;
+static const int MAX_LOADSTRING = 256;
 
 /// @brief Triangles application window class
 class ApplicationWindow
 {
 public:
 
+    /// Access from WinMain
     friend int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 
     // @brief Registers the window class
@@ -134,13 +135,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
                 VertPosDiffuse(D3DXVECTOR4(400, 400, 0, 1), D3DCOLOR_XRGB(0, 255, 0))
             };
 
-            ApplicationWindow::Direct3DDevice()->BeginScene();
-            ApplicationWindow::Direct3DDevice()->Clear(0, NULL, D3DCLEAR_TARGET|D3DCLEAR_STENCIL| D3DCLEAR_ZBUFFER, 0x808080, 0, 0);
+            ApplicationWindow::m_d3dDevice->BeginScene();
+            ApplicationWindow::m_d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET|D3DCLEAR_STENCIL| D3DCLEAR_ZBUFFER, 0x808080, 0, 0);
 
-            ApplicationWindow::Direct3DDevice()->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-            ApplicationWindow::Direct3DDevice()->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 1, v, sizeof(VertPosDiffuse));
-            ApplicationWindow::Direct3DDevice()->EndScene();
-            ApplicationWindow::Direct3DDevice()->Present(NULL, NULL, NULL, NULL);
+            ApplicationWindow::m_d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
+            ApplicationWindow::m_d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 1, v, sizeof(VertPosDiffuse));
+            ApplicationWindow::m_d3dDevice->EndScene();
+            ApplicationWindow::m_d3dDevice->Present(NULL, NULL, NULL, NULL);
         }
     }
     return (int) msg.wParam;

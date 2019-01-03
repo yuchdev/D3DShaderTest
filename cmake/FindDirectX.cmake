@@ -56,7 +56,7 @@ if (WIN32)
 
     if (DirectX_ROOT_DIR)
         set(DirectX_INC_SEARCH_PATH "${DirectX_ROOT_DIR}/Include")
-        set(DirectX_LIB_SEARCH_PATH "${DirectX_ROOT_DIR}/Lib/${DirectX_ARCHITECTURE}")
+        set(DirectX_LIB_SEARCH_PATH "${DirectX_ROOT_DIR}/Lib/x86")
         set(DirectX_BIN_SEARCH_PATH "${DirectX_ROOT_DIR}/Utilities/bin/x86")
     endif ()
 

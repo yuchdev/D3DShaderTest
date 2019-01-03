@@ -39,3 +39,4 @@ else()
 endif()
 
 add_subdirectory(triangle)
+add_subdirectory(shaders)
