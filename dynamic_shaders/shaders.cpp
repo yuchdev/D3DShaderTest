@@ -8,6 +8,8 @@
 #include <d3dx9.h>
 
 #define NOMINMAX
+#define EXIT_ON_FAILURE(hr) if(FAILED((hr))) { return FALSE; }
+
 static const int MAX_LOADSTRING = 256;
 
 /// @brief Shaders application window class
@@ -100,15 +102,19 @@ LPD3DXCONSTANTTABLE ApplicationWindow::m_vertexShaderTable = NULL;
 LPD3DXCONSTANTTABLE ApplicationWindow::m_pixelShaderTable = NULL;
 
 
+/// @brief Minimalistic command-line parser class
 class CommandLineParams
 {
 public:
+
+    /// @brief Parse command-line without executable name
     CommandLineParams(LPSTR lpCmdLine)
     {
         std::string commandLine(lpCmdLine);
         split(commandLine);
     }
 
+    /// @brief Param by index
     std::string param(size_t index) const
     {
         if(index < m_parsedParams.size())
@@ -121,6 +127,7 @@ public:
         }
     }
 
+    /// @brief Size of params array
     size_t size() const
     {
         return m_parsedParams.size();
@@ -243,7 +250,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             ApplicationWindow::m_d3dDevice->Present(NULL, NULL, NULL, NULL);
         }
     }
-    return (int) msg.wParam;
+    
+    return static_cast<int>(msg.wParam);
 }
 
 ATOM ApplicationWindow::MyRegisterClass(HINSTANCE hInstance)
@@ -331,8 +339,7 @@ BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight, 
     d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
     HRESULT hr = m_D3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &m_d3dDevice);
-    if (FAILED(hr))
-        return FALSE;
+    EXIT_ON_FAILURE(hr);
 
     LPD3DXBUFFER dxErrorBuffer = NULL;
     LPD3DXBUFFER dxShaderBuffer = NULL;
@@ -343,14 +350,10 @@ BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight, 
         NULL, NULL, 
         "main", "vs_3_0", 
         D3DXSHADER_OPTIMIZATION_LEVEL3, &dxShaderBuffer, &dxErrorBuffer, &m_vertexShaderTable);
-    if (FAILED(hr)){
-        return FALSE;
-    }
+    EXIT_ON_FAILURE(hr);
 
     hr = m_d3dDevice->CreateVertexShader(reinterpret_cast<DWORD*>(dxShaderBuffer->GetBufferPointer()), &m_vertexShader);
-    if (FAILED(hr)){
-        return FALSE;
-    }
+    EXIT_ON_FAILURE(hr);
 
     dxShaderBuffer->Release();
 
@@ -360,14 +363,10 @@ BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight, 
         NULL, NULL, 
         "main", "ps_3_0", 
         D3DXSHADER_OPTIMIZATION_LEVEL3, &dxShaderBuffer, &dxErrorBuffer, &m_pixelShaderTable);
-    if (FAILED(hr)) {
-        return FALSE;
-    }
+    EXIT_ON_FAILURE(hr);
 
     hr = m_d3dDevice->CreatePixelShader(reinterpret_cast<DWORD*>(dxShaderBuffer->GetBufferPointer()), &m_pixelShader);
-    if (FAILED(hr)) {
-        return FALSE;
-    }
+    EXIT_ON_FAILURE(hr);
 
     dxShaderBuffer->Release();
 

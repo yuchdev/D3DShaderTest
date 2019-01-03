@@ -6,6 +6,9 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
+#define NOMINMAX
+#define EXIT_ON_FAILURE(hr) if(FAILED((hr))) { return FALSE; }
+
 static const int MAX_LOADSTRING = 256;
 
 /// @brief Textures application window class
@@ -194,7 +197,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             ApplicationWindow::m_d3dDevice->Present(NULL, NULL, NULL, NULL);
         }
     }
-    return (int) msg.wParam;
+    
+    return static_cast<int>(msg.wParam);
 }
 
 ATOM ApplicationWindow::MyRegisterClass(HINSTANCE hInstance)
@@ -281,9 +285,8 @@ BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
     d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
     d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
-    HRESULT hr = m_D3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &m_d3dDevice);
-    if (FAILED(hr))
-        return FALSE;
+    HRESULT hr = m_D3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &m_d3dDevice);
+    EXIT_ON_FAILURE(hr);
 
     LPD3DXBUFFER dxErrorBuffer = NULL;
     LPD3DXBUFFER dxShaderBuffer = NULL;
@@ -294,15 +297,10 @@ BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
         NULL, NULL, 
         "main", "vs_3_0", 
         D3DXSHADER_OPTIMIZATION_LEVEL3, &dxShaderBuffer, &dxErrorBuffer, &m_vertexShaderTable);
-
-    if (FAILED(hr)){
-        return FALSE;
-    }
+    EXIT_ON_FAILURE(hr);
 
     hr = m_d3dDevice->CreateVertexShader(reinterpret_cast<DWORD*>(dxShaderBuffer->GetBufferPointer()), &m_vertexShader);
-    if (FAILED(hr)){
-        return FALSE;
-    }
+    EXIT_ON_FAILURE(hr);
 
     dxShaderBuffer->Release();
 
@@ -312,24 +310,16 @@ BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
         NULL, NULL, 
         "pixel_shader_main", "ps_3_0", 
         D3DXSHADER_OPTIMIZATION_LEVEL3, &dxShaderBuffer, &dxErrorBuffer, &m_pixelShaderTable);
-
-    if (FAILED(hr)) {
-        return FALSE;
-    }
+    EXIT_ON_FAILURE(hr);
 
     hr = m_d3dDevice->CreatePixelShader(reinterpret_cast<DWORD*>(dxShaderBuffer->GetBufferPointer()), &m_pixelShader);
+    EXIT_ON_FAILURE(hr);
 
-    if (FAILED(hr)) {
-        return FALSE;
-    }
-    
     dxShaderBuffer->Release();
 
     hr = D3DXCreateTextureFromFile(m_d3dDevice, "textures/stone-ground-diff.dds", &m_3dTexture);
+    EXIT_ON_FAILURE(hr);
 
-    if (FAILED(hr)) {
-        return FALSE;
-    }
     return TRUE;    
 }
 

@@ -141,7 +141,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             ApplicationWindow::m_d3dDevice->Present(NULL, NULL, NULL, NULL);
         }
     }
-    return (int) msg.wParam;
+    
+    return static_cast<int>(msg.wParam);
 }
 
 ATOM ApplicationWindow::MyRegisterClass(HINSTANCE hInstance)
