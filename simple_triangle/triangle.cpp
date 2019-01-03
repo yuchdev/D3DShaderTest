@@ -96,13 +96,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     ApplicationWindow::MyRegisterClass(hInstance);
 
     // Perform application initialization:
-    if (!ApplicationWindow::InitInstance(hInstance, nCmdShow)) {
+    if (!ApplicationWindow::InitInstance(hInstance, nCmdShow))
+    {
         return FALSE;
     }
 
     RECT rc;
     GetClientRect(ApplicationWindow::WindowHandle(), &rc);
-    if (!ApplicationWindow::InitD3D(ApplicationWindow::WindowHandle(), rc.right - rc.left, rc.bottom - rc.top)) {
+    if (!ApplicationWindow::InitD3D(ApplicationWindow::WindowHandle(), rc.right - rc.left, rc.bottom - rc.top))
+    {
         return FALSE;
     }
 
@@ -119,27 +121,25 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         }
         else
         {
-            struct VertPosDiffuse 
+            struct VertexCoordinates 
             {
+                VertexCoordinates(D3DXVECTOR4 pos, D3DCOLOR color) : m_pos(pos), m_color(color) {}
                 D3DXVECTOR4 m_pos;
                 D3DCOLOR m_color;
-                VertPosDiffuse(D3DXVECTOR4 pos, D3DCOLOR color)
-                    : m_pos(pos), m_color(color)
-                {}
             };
 
-            VertPosDiffuse v[] = 
+            VertexCoordinates triangleVertexSet[] = 
             {
-                VertPosDiffuse(D3DXVECTOR4(  0,   0, 0, 1), D3DCOLOR_XRGB(255, 0, 0)),
-                VertPosDiffuse(D3DXVECTOR4(400,   0, 0, 1), D3DCOLOR_XRGB(0, 0, 255)),
-                VertPosDiffuse(D3DXVECTOR4(400, 400, 0, 1), D3DCOLOR_XRGB(0, 255, 0))
+                VertexCoordinates(D3DXVECTOR4(  0,   0, 0, 1), D3DCOLOR_XRGB(255, 0, 0)),
+                VertexCoordinates(D3DXVECTOR4(400,   0, 0, 1), D3DCOLOR_XRGB(0, 0, 255)),
+                VertexCoordinates(D3DXVECTOR4(400, 400, 0, 1), D3DCOLOR_XRGB(0, 255, 0))
             };
 
             ApplicationWindow::m_d3dDevice->BeginScene();
             ApplicationWindow::m_d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET|D3DCLEAR_STENCIL| D3DCLEAR_ZBUFFER, 0x808080, 0, 0);
 
             ApplicationWindow::m_d3dDevice->SetFVF(D3DFVF_XYZRHW|D3DFVF_DIFFUSE);
-            ApplicationWindow::m_d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 1, v, sizeof(VertPosDiffuse));
+            ApplicationWindow::m_d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 1, triangleVertexSet, sizeof(VertexCoordinates));
             ApplicationWindow::m_d3dDevice->EndScene();
             ApplicationWindow::m_d3dDevice->Present(NULL, NULL, NULL, NULL);
         }
@@ -170,7 +170,7 @@ ATOM ApplicationWindow::MyRegisterClass(HINSTANCE hInstance)
 BOOL ApplicationWindow::InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     ApplicationWindow::SetInstanceHandle(hInstance);
-    
+
     HWND handle = CreateWindow(ApplicationWindow::WindowClass(), 
         ApplicationWindow::WindowTitle(), 
         WS_OVERLAPPEDWINDOW,
@@ -178,7 +178,8 @@ BOOL ApplicationWindow::InitInstance(HINSTANCE hInstance, int nCmdShow)
         800, 600, 
         NULL, NULL, hInstance, NULL);
 
-    if (!handle) {
+    if (!handle) 
+    {
         return FALSE;
     }
 
@@ -216,8 +217,10 @@ LRESULT CALLBACK ApplicationWindow::WndProc(HWND hWnd, UINT message, WPARAM wPar
 BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
 {
     m_D3D = Direct3DCreate9(D3D_SDK_VERSION);
-    if (m_D3D==NULL)
+    if (NULL == m_D3D)
+    {
         return FALSE;
+    }
 
     D3DPRESENT_PARAMETERS d3dpp;
     ZeroMemory(&d3dpp, sizeof(D3DPRESENT_PARAMETERS));
@@ -232,7 +235,6 @@ BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
     d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
     HRESULT hr = m_D3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &m_d3dDevice);
-
     return !FAILED(hr);
 }
 

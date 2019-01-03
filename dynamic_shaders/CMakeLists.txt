@@ -1,4 +1,4 @@
-set(TARGET shaders)
+set(TARGET dynamic_shaders)
 
 if(DirectX_D3D8_INCLUDE_FOUND)
     message("Add Direct3D 8 includes: " ${DirectX_D3D8_INCLUDE_DIR})

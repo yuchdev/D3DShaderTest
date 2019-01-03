@@ -38,5 +38,6 @@ else()
     message(FATAL_ERROR "Windows required for Direct3D support")
 endif()
 
-add_subdirectory(triangle)
-add_subdirectory(shaders)
+add_subdirectory(simple_triangle)
+add_subdirectory(dynamic_shaders)
+add_subdirectory(load_texture)
