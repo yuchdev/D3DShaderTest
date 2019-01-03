@@ -32,7 +32,7 @@ public:
     static BOOL InitInstance(HINSTANCE, int);
 
     /// @brief Initialize Direct3D subsystem
-    static BOOL InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight);
+    static BOOL InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight, LPCSTR vertexSrcFile, LPCSTR pixelSrcFile);
 
     /// @brief Run window messages processing
     /// WM_COMMAND	- process the application menu
@@ -120,6 +120,11 @@ public:
             return std::string();
         }
     }
+
+    size_t size() const
+    {
+        return m_parsedParams.size();
+    }
 private:
 
     void split(const std::string &txt, char ch = ' ')
@@ -153,7 +158,15 @@ std::string GetFileContent(const std::string& filename)
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+
+    std::string vertexSrcHlsl("shaders/rotating_triangle_vertex.hlsl");
+    std::string pixelSrcHlsl("shaders/rotating_triangle_pixel.hlsl");
+    CommandLineParams cmdLineParams(lpCmdLine);
+    if(2 == cmdLineParams.size())
+    {
+        vertexSrcHlsl = cmdLineParams.param(0);
+        pixelSrcHlsl = cmdLineParams.param(1);
+    }
 
     // Initialize global strings
     LoadString(hInstance, IDS_APP_TITLE, ApplicationWindow::m_wndTitle, MAX_LOADSTRING);
@@ -166,7 +179,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
     RECT rc;
     GetClientRect(ApplicationWindow::m_hMainWnd, &rc);
-    if (!ApplicationWindow::InitD3D(ApplicationWindow::m_hMainWnd, rc.right - rc.left, rc.bottom - rc.top)) {
+    BOOL ret = ApplicationWindow::InitD3D(ApplicationWindow::m_hMainWnd, 
+        rc.right - rc.left, rc.bottom - rc.top, 
+        vertexSrcHlsl.c_str(), pixelSrcHlsl.c_str());
+
+    if (!ret) {
         return FALSE;
     }
 
@@ -295,7 +312,7 @@ LRESULT CALLBACK ApplicationWindow::WndProc(HWND hWnd, UINT message, WPARAM wPar
     return 0;
 }
 
-BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
+BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight, LPCSTR vertexSrcFile, LPCSTR pixelSrcFile)
 {
     m_D3D = Direct3DCreate9(D3D_SDK_VERSION);
     if (m_D3D==NULL)
@@ -320,13 +337,12 @@ BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
     LPD3DXBUFFER dxErrorBuffer = NULL;
     LPD3DXBUFFER dxShaderBuffer = NULL;
 
-    std::string vertexShaderSrc = GetFileContent("shaders/vertex_shader.hlsl");
+    std::string vertexShaderSrc = GetFileContent(vertexSrcFile);
     hr = D3DXCompileShader(vertexShaderSrc.c_str(), 
         vertexShaderSrc.size(), 
         NULL, NULL, 
         "main", "vs_3_0", 
         D3DXSHADER_OPTIMIZATION_LEVEL3, &dxShaderBuffer, &dxErrorBuffer, &m_vertexShaderTable);
-
     if (FAILED(hr)){
         return FALSE;
     }
@@ -338,19 +354,17 @@ BOOL ApplicationWindow::InitD3D(HWND hWnd, int iWindowWidth, int iWindowHeight)
 
     dxShaderBuffer->Release();
 
-    std::string pixelShaderSrc = GetFileContent("shaders/pixel_shader.hlsl");
+    std::string pixelShaderSrc = GetFileContent(pixelSrcFile);
     hr = D3DXCompileShader(pixelShaderSrc.c_str(), 
         pixelShaderSrc.size(), 
         NULL, NULL, 
         "main", "ps_3_0", 
         D3DXSHADER_OPTIMIZATION_LEVEL3, &dxShaderBuffer, &dxErrorBuffer, &m_pixelShaderTable);
-
     if (FAILED(hr)) {
         return FALSE;
     }
 
     hr = m_d3dDevice->CreatePixelShader(reinterpret_cast<DWORD*>(dxShaderBuffer->GetBufferPointer()), &m_pixelShader);
-
     if (FAILED(hr)) {
         return FALSE;
     }
