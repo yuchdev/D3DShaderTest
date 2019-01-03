@@ -1,6 +1,3 @@
-// Tutorial-02.cpp : Defines the entry point for the application.
-//
-
 #include "resource.h"
 #include <d3d9.h>
 #include <d3dx9.h>
