@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
-project(vbos_d3d_shaders)
-set(TARGET vbos_d3d_shaders)
+project(vbox_d3d_shaders)
+set(TARGET vbox_d3d_shaders)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 

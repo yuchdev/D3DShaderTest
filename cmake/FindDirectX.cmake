@@ -106,7 +106,8 @@ if (WIN32)
     find_winsdk_header(D3D d3d.h)
 
     find_dxsdk_header(D3D8 d3d8.h)
-    find_winsdk_header(D3D9  d3d9.h)
+    find_dxsdk_header(D3D9 d3d9.h)
+    find_winsdk_header(D3D10  d3d10.h)
     find_winsdk_header(D3D11_4 d3d11_4.h)
     find_winsdk_header(D2D1_1  d2d1_1.h)
 
